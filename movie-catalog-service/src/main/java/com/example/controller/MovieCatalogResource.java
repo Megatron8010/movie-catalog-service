@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import com.example.entity.CatalogItem;
 import com.example.entity.Movie;
 import com.example.entity.Rating;
+import com.example.entity.UserRating;
 
 @RestController
 @RequestMapping("/catalog")
@@ -25,11 +26,13 @@ public class MovieCatalogResource {
 	public List<CatalogItem> getCatalog(@PathVariable("userid") String userid) {
 	//	RestTemplate restTemplate = new RestTemplate();
 	//	Movie movie = restTemplate.getForObject("localhost:8081/movies/foo", Movie.class); //parsing getting the json from the url and making it an object of movie.class
-		List<Rating> ratings = Arrays.asList(
+	/*	List<Rating> ratings = Arrays.asList(
 				new Rating("1234", 3),
                 new Rating("5678", 4)
-				);
-		return ratings.stream()
+				);    */
+		
+		UserRating ratings = restTemplate.getForObject("http://localhost:8082/ratingsdata/user/"+ userid, UserRating.class);
+		return ratings.getRatings().stream()
 				.map(rating -> {
                     Movie movie = restTemplate.getForObject("http://localhost:8081/movies/" + rating.getMovieId(), Movie.class);
                     return new CatalogItem(movie.getName(), "Description", rating.getRating());
